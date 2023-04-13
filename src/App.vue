@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from '@vue/reactivity';
 import { ref } from 'vue'
 const items = ref([
   {
@@ -38,6 +39,30 @@ const items = ref([
     soldOut: false
   }
 ])
+
+function pricePrefix(price) {
+  return price.toLocaleString()
+}
+
+function stockQuantity() {
+  return items.value.filter(item => item.soldOut === false).length
+}
+
+const stockQuantityComputed = computed(function() {
+  return items.value.filter(item => item.soldOut === false).length
+})
+
+function stockItem(item) {
+  item.soldOut = false
+}
+
+function getDate() {
+  return Date.now()
+}
+
+const getDateComputed = computed(function() {
+  return Date.now()
+})
 </script>
 
 <template>
@@ -46,6 +71,9 @@ const items = ref([
       src="/images/logo.svg"
       alt="">
     <h1>Vue.js ハンズオン</h1>
+    <div>商品数: {{ stockQuantity() }}</div>
+    <div>現在時刻: {{ getDate() }}</div>
+    <div>現在時刻(computed): {{ getDateComputed }}</div>
   </header>
   <main class="main">
     <template
@@ -62,10 +90,10 @@ const items = ref([
         <div class="description">
           <h2>{{ item.name }}</h2>
           <p>{{ item.description }}</p>
-          <span>¥<span class="price">{{ item.price }}</span></span>
+          <span>¥<span class="price">{{ pricePrefix(item.price) }}</span></span>
         </div>
       </div>
-      <div v-else>売り切れです。</div>
+      <div v-else>売り切れです。<button type="button" @click="stockItem(item)">入荷</button></div>
     </template>
   </main>
 </template>
