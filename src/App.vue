@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from '@vue/reactivity';
 import { ref } from 'vue'
+import Card from './components/Card.vue'
+
 const items = ref([
   {
     id: 1,
@@ -44,10 +46,6 @@ const items = ref([
   }
 ])
 
-function pricePrefix(price) {
-  return price.toLocaleString()
-}
-
 function stockQuantity() {
   return items.value.filter(item => item.soldOut === false).length
 }
@@ -67,6 +65,11 @@ function getDate() {
 const getDateComputed = computed(function() {
   return Date.now()
 })
+
+function changeSoldOut(id) {
+  const pickElm = items.value.find(item => item.id == id)
+  pickElm.soldOut = true
+}
 </script>
 
 <template>
@@ -90,16 +93,13 @@ const getDateComputed = computed(function() {
         @click="item.selected = !item.selected"
         @keyup.enter="item.selected = !item.selected"
         tabindex="0">
-        <div class="thumbnail">
-          <img
-            :src="item.image"
-            alt="">
-        </div>
-        <div class="description">
-          <h2>{{ item.name }}</h2>
-          <p>{{ item.description }}</p>
-          <span>¥<span class="price">{{ pricePrefix(item.price) }}</span></span>
-        </div>
+        <Card
+          :id="item.id"
+          :image="item.image"
+          :name="item.name"
+          :description="item.description"
+          :price="item.price"
+          @sold-out="changeSoldOut"/>
       </div>
       <div v-else>売り切れです。<button type="button" @click="stockItem(item)">入荷</button></div>
     </template>
@@ -157,35 +157,6 @@ body {
 .item:hover {
   transition: 0.2s transform ease-out;
   transform: scale(1.05);
-}
-
-.item > div.thumbnail > img {
-  width: 100%;
-  height: calc(100%);
-  object-fit: cover;
-}
-
-.item > div.description {
-  text-align: left;
-  margin-top: 20px;
-}
-
-.item > div.description > p {
-  margin-top: 0px;
-  margin-bottom: 0px;
-  font-size: 18px;
-  line-height: 25px;
-}
-
-.item > div.description > span {
-  display: block;
-  margin-top: 10px;
-  font-size: 20px;
-}
-
-.item > div.description > span > .price {
-  font-size: 28px;
-  font-weight: bold;
 }
 
 .selected-item {
